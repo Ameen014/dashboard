@@ -2,7 +2,7 @@
   "name": "mary-dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://Ameen014.github.io/Dashboard",
+  "homepage": "https://Ameen014.github.io/login",
   "dependencies": {
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.0.2",
