@@ -11,6 +11,7 @@
     import SettingsIcon from '@mui/icons-material/Settings';
     import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
     import AspectRatioIcon from '@mui/icons-material/AspectRatio';
+    import LocalMallIcon from '@mui/icons-material/LocalMall';
 
     const Sidebar = ({ isOpen , toggleSidebar }) => {
 
@@ -52,6 +53,7 @@
             { path: '/admins', label: 'Admins', icon: <AdminPanelSettingsIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'admin.get' },
             { path: '/Settings', label: 'Settings', icon: <SettingsIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'setting.get' },
             { path: '/Role', label: 'Roles', icon: <LockIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'role.get' },
+            { path: '/orders', label: 'orders', icon: <LocalMallIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'order.get' },
             { path: '/products', label: 'Products', icon: <ProductionQuantityLimitsIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'product.get' },
             { path: '/categories', label: 'Categories', icon: <CategoryIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'category.get' },
             { path: '/sizes', label: 'Sizes', icon: <AspectRatioIcon className='icon' sx={{ fontSize: "22px", marginRight: "9px" }} />, permission: 'setting.get' },

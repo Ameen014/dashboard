@@ -29,6 +29,7 @@ import AddSize from "./Component/Sizes/AddSize";
 import EditSize from "./Component/Sizes/EditSize"
 
 import Setting from "./Component/Settings/Settings";
+import Orders from "./Component/Orders/Orders";
 
 function AppContent () {
 
@@ -141,6 +142,14 @@ function AppContent () {
                 element={
                 <ProtectedRoute requiredPermission="admin.edit">
                     <EditAdmin />
+                </ProtectedRoute>
+                }
+            />
+             <Route
+                path="/Orders"
+                element={
+                <ProtectedRoute requiredPermission="order.get">
+                    <Orders />
                 </ProtectedRoute>
                 }
             />

@@ -381,7 +381,7 @@ setIsLoading(true);
                         <Box component="form" noValidate autoComplete="off">
                             <Grid container spacing={2}>
                                 <Grid item xs={12} sm={12}>
-                                        <Files
+                                      <Files
                                         className='files-dropzone fileContainer'
                                         onChange={onFilesChange}
                                         onError={onFilesError}

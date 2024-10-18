@@ -17,6 +17,7 @@ import FormControl from '@mui/material/FormControl';
 import { Switch } from '@mui/material';
 import { Select, MenuItem } from '@mui/material';
 import { Autocomplete } from '@mui/material';
+import { useDropzone } from 'react-dropzone';  
 
 import Files from 'react-files';
 
@@ -31,9 +32,10 @@ const AddProduct = () => {
     const controllerRef = useRef(null)
     const [formData, setFormData] = useState({
         name:"",      
-        size_id:"",
+        size_id:"1",
         category_id:"",        
         visible:"0",        
+        photos: [],
     })
 
     useEffect(() => {
@@ -145,6 +147,13 @@ const AddProduct = () => {
             }
             else if (key === "photo")
                 form_data.append("file", updatedFormData.photo);
+
+            else if (key === "photos") {
+                updatedFormData.photos.forEach((file, index) => {
+                        form_data.append(`photos[]`, file); 
+                    
+                });
+            }
             else
                 form_data.append(key, updatedFormData[key]);
         });
@@ -206,13 +215,32 @@ const AddProduct = () => {
         setFiles(file)
     }
 
+    const onDrop = (acceptedFiles) => {  
+        const filesWithPreview = acceptedFiles.map(file => Object.assign(file, {  
+            url: URL.createObjectURL(file)  
+        }));  
+        setFormData(prev => ({ ...prev, photos: [...prev.photos, ...filesWithPreview] })); 
+    };  
+    
+    const deleteFiles = (fileToDelete,id) => {  
+
+        setFormData(prev => ({
+            ...prev,
+            photos: prev.photos.filter(file => file !== fileToDelete),
+            delete_photo_id: id != (undefined) ? [...(prev.delete_photo_id || []), id] : prev.delete_photo_id
+        }));  
+    };  
+
+    const { getRootProps, getInputProps } = useDropzone({ onDrop, multiple: true });  
+
+
 
     return (
         <>
             <Container sx={{ marginBottom: "20px" }}>
                 <Grid container sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                     <Grid item>
-                        <Typography sx={{ fontSize: "28px", fontWeight: "600", color: "#1e1b1b" }}>Add Dress</Typography>
+                        <Typography sx={{ fontSize: "28px", fontWeight: "600", color: "#1e1b1b" }}>Add Product</Typography>
                     </Grid>
                     <Grid item>
                         <Button
@@ -306,7 +334,7 @@ const AddProduct = () => {
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
-                                                    label="category"
+                                                    label="size"
                                                     sx={{ width: { xs: "100%", sm: "90%", md: "90%", lg: "65%" } }}
                                                     InputProps={{
                                                         ...params.InputProps,
@@ -378,6 +406,47 @@ const AddProduct = () => {
                                             </Button>
                                         </div> : ''
                                     }
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Container>
+            <Container sx={{ marginBottom: "50px" }}>
+                <Card style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}>  
+                    <CardContent>
+                      <h3 style={{ textAlign: 'center', fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>Upload Images</h3>
+                        <Box component="form" noValidate autoComplete="off">
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={12}>
+                                <div {...getRootProps({ className: 'dropzone' })}>  
+                                    <input {...getInputProps()} />  
+                                    <p>Drag 'n' drop some files here, or click to select files</p>  
+                                    <Button sx={{ backgroundColor: "#14213D ", color: "white", marginTop: '10px' }}>Upload Images</Button>  
+                                    {formData.photos.length > 0 && (  
+                                         <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap' }}>   
+                                            {formData.photos.map((file, index) => (  
+                                                <div key={index} style={{ margin: '5px', width: '10%', position: 'relative' }}>  
+                                                    <img src={file.url} alt="preview" style={{ width: '100px',height:"100px", borderRadius: '4px',maxWidth:"100%" }} />  
+                                                    <button onClick={() => deleteFiles(file,file.id)}
+                                                      style={{  
+                                                        position: 'absolute',   
+                                                        top: '5px',   
+                                                        right: '5px',   
+                                                        fontSize: '12px',  
+                                                        backgroundColor: '#f44336',   
+                                                        border:"1px solid white",
+                                                        borderRadius:"6px",
+                                                        color: 'white',
+                                                        cursor:"pointer"  
+                                                    }}>  
+                                                        x  
+                                                    </button>  
+                                                </div>  
+                                            ))}  
+                                        </div>  
+                                    )}  
+                                </div>
                                 </Grid>
                             </Grid>
                         </Box>

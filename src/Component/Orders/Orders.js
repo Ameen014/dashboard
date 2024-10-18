@@ -13,7 +13,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import TablePagination from '@mui/material/TablePagination';
 
-const Sizes = () => {
+const Orders = () => {
 
     const navigate = useNavigate()
     const { enqueueSnackbar } = useSnackbar();
@@ -25,16 +25,16 @@ const Sizes = () => {
     const [values,setValues] = useState({})
     const [values_Filter, setFilter_Values] = useState({})
     const [ totalItems, setTotalItems ] = useState(0)
-    const [size, setsize] = useState([])
+    const [product, setproduct] = useState([])
 
-    const BaseApi = api_Routes.sizes.view
+    const BaseApi = api_Routes.orders.view
 
 
     useEffect(()=>{
         const controller = new AbortController()
         const signal = controller.signal
   
-        get_Sizes(signal)
+        get_order(signal)
   
          return()=>{
           controller.abort()
@@ -42,13 +42,20 @@ const Sizes = () => {
   
         },[values_Filter,page,perPage])
 
-    const get_Sizes = async (signal) => {
+    const get_order = async (signal) => {
 
         let url = BaseApi + '?1=1';
 
         if (values_Filter.name ) {
-          url = url + `&name=${values_Filter.name}`;
+          url = url + `&keywords=${values_Filter.name}`;
         }
+        if (values_Filter.price ) {
+          url = url + `&total=${values_Filter.price}`;
+        }
+        if (values_Filter.from_date ) {
+          url = url + `&from_date=${values_Filter.from_date}`;
+        }
+       
   
           setIsLoading(true)
         
@@ -60,20 +67,21 @@ const Sizes = () => {
            
               data:{
                 results:perPage,
-                page:page,                
+                page:page,    
               }
         })
         if(response){
 
-            setsize([])
+            setproduct([])
             setTotalItems(response.meta.total)
 
               response.data.forEach(elem => {
-                setsize(prev=>[...prev,{
+                setproduct(prev=>[...prev,{
                     id:elem.id,
                     name:elem.name,
-                    price:elem.price,
-                    buyPrice:elem.buy_price,
+                    phone:elem.phone,
+                    total:elem.total,
+                    created_at:elem.created_at,
                     action: (
                         <div>
                           <span onClick={() => handleOpenDialog(elem.id)} >
@@ -86,7 +94,7 @@ const Sizes = () => {
                             </svg>
                           </span>
 
-                          <span style={{paddingLeft:"15px"}} onClick={()=>{navigate(`/EditSize/${elem.id}`)}}>
+                          <span style={{paddingLeft:"15px"}} onClick={()=>{navigate(`/EditOrder/${elem.id}`)}}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="edit-icon">
                             <path d="M15 22.75H9C3.57 22.75 1.25 20.43 1.25 15V9C1.25 3.57 3.57 1.25 9 1.25H11C11.41 1.25 11.75 1.59 11.75 2C11.75 2.41 11.41 2.75 11 2.75H9C4.39 2.75 2.75 4.39 2.75 9V15C2.75 19.61 4.39 21.25 9 21.25H15C19.61 21.25 21.25 19.61 21.25 15V13C21.25 12.59 21.59 12.25 22 12.25C22.41 12.25 22.75 12.59 22.75 13V15C22.75 20.43 20.43 22.75 15 22.75Z" fill="#141414" fill-opacity="0.6"/>
                             <path d="M8.50008 17.69C7.89008 17.69 7.33008 17.47 6.92008 17.07C6.43008 16.58 6.22008 15.87 6.33008 15.12L6.76008 12.11C6.84008 11.53 7.22008 10.78 7.63008 10.37L15.5101 2.49C17.5001 0.499998 19.5201 0.499998 21.5101 2.49C22.6001 3.58 23.0901 4.69 22.9901 5.8C22.9001 6.7 22.4201 7.58 21.5101 8.48L13.6301 16.36C13.2201 16.77 12.4701 17.15 11.8901 17.23L8.88008 17.66C8.75008 17.69 8.62008 17.69 8.50008 17.69ZM16.5701 3.55L8.69008 11.43C8.50008 11.62 8.28008 12.06 8.24008 12.32L7.81008 15.33C7.77008 15.62 7.83008 15.86 7.98008 16.01C8.13008 16.16 8.37008 16.22 8.66008 16.18L11.6701 15.75C11.9301 15.71 12.3801 15.49 12.5601 15.3L20.4401 7.42C21.0901 6.77 21.4301 6.19 21.4801 5.65C21.5401 5 21.2001 4.31 20.4401 3.54C18.8401 1.94 17.7401 2.39 16.5701 3.55Z" fill="#141414" fill-opacity="0.6"/>
@@ -134,7 +142,7 @@ const Sizes = () => {
     
     const handleDeleteConfirmed = async () => {
         const {response, message} = await Helper.Delete({
-          url:api_Routes.sizes.bulkDelete(recordIdToDelete),
+          url:api_Routes.orders.bulkDelete(recordIdToDelete),
           hasToken:true,
         })
         if(response){
@@ -142,7 +150,7 @@ const Sizes = () => {
             vertical: 'top',
             horizontal: 'right'
           }}) 
-          get_Sizes()
+          get_order()
         }else{
           enqueueSnackbar(message,{variant:"error",anchorOrigin: {
             vertical: 'top',
@@ -157,7 +165,7 @@ const Sizes = () => {
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle sx={{color:"red"}}>Confirm Delete</DialogTitle>
           <DialogContent>
-            <Typography>Are you sure you want to delete this Size?</Typography>
+            <Typography>Are you sure you want to delete this order?</Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
@@ -168,12 +176,7 @@ const Sizes = () => {
         <Container sx={{marginBottom:"20px"}}>
             <Grid container sx={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <Grid item>
-                  <Typography sx={{fontSize:"28px" , fontWeight:"600" , color:"#1e1b1b"}} >Sizes</Typography>
-                </Grid>
-                <Grid item >
-                  <Button variant="contained" startIcon={<AddIcon />} sx={{backgroundColor:"#14213D ",fontSize:"13px",borderRadius:"7px",height:"38px",'&:hover': {  backgroundColor: "#14213D "  }}} onClick={()=> {navigate('/AddSize')}}>
-                    Add Size
-                  </Button>
+                  <Typography sx={{fontSize:"28px" , fontWeight:"600" , color:"#1e1b1b"}} >Orders</Typography>
                 </Grid>
             </Grid>
             <Card sx={{marginTop:"20px"}}>
@@ -191,7 +194,31 @@ const Sizes = () => {
                               onChange={(e)=>{handleChange("name",e.target.value)}} 
                           />
                   </Grid>                 
-                  <Grid item  xs={12} sm={8} >
+                  <Grid item xs={12} sm={3}>
+                          <TextField 
+                              type="number"
+                              id="filled-basic"
+                              label="Search By price" 
+                              variant="standard" 
+                              name="origin" 
+                              color="primary"
+                              size="small"
+                              onChange={(e)=>{handleChange("price",e.target.value)}} 
+                          />
+                  </Grid>                 
+                  <Grid item xs={12} sm={3}>
+                          <TextField 
+                              type="date"
+                              id="filled-basic"
+                              variant="standard" 
+                              name="origin" 
+                              color="primary"
+                              size="small"
+                              sx={{marginTop:"14px"}}
+                              onChange={(e)=>{handleChange("from_date",e.target.value)}} 
+                          />
+                  </Grid>                 
+                  <Grid item  xs={12} sm={2} >
                       
                   </Grid>
                   <Grid item  xs={12} sm={1} sx={{marginTop:"5px"}} >
@@ -200,7 +227,6 @@ const Sizes = () => {
                       </Button>
                   </Grid>
               </Grid>
-              
             </Box>
           </CardContent>
         </Card>
@@ -216,19 +242,21 @@ const Sizes = () => {
                                     <TableHead sx={{backgroundColor:"#14213D  !important", color:"white !important"}}>
                                         <TableRow>
                                             <TableCell> Id </TableCell>
-                                            <TableCell> Name </TableCell>                                           
-                                            <TableCell> Price </TableCell>                                           
-                                            <TableCell> Buy Price </TableCell>                                           
+                                            <TableCell> Name </TableCell>
+                                            <TableCell> phone </TableCell>
+                                            <TableCell> total </TableCell>
+                                            <TableCell> time </TableCell>
                                             <TableCell> Action </TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {size.map((ad) => (
+                                        {product.map((ad) => (
                                             <TableRow key={ad.id}>
                                                 <TableCell>{ad.id}</TableCell>
                                                 <TableCell>{ad.name}</TableCell>
-                                                <TableCell>{ad.price}</TableCell>
-                                                <TableCell>{ad.buyPrice}</TableCell>
+                                                <TableCell>{ad.phone}</TableCell>
+                                                <TableCell>{ad.total}</TableCell>
+                                                <TableCell>{ad.created_at.split('T')[0]}</TableCell>
                                                 <TableCell>{ad.action}</TableCell>               
                                             </TableRow>
                                         ))}
@@ -260,4 +288,4 @@ const Sizes = () => {
     </>)
 
 }
-export default Sizes;
+export default Orders;
